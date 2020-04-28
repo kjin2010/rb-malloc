@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include "heap.h"
+#include "debug.h"
+
+#define big 1100
+
+long the_heap[HEAP_SIZE/sizeof(long)];
+
+int main(){
+
+    long *arr[big];
+    for (int i = 0; i < big; i++) {
+        arr[i] = malloc(i + 1);
+    }
+
+    for (int i = big / 2; i < big; i++) {
+        free(arr[i]);
+    }
+
+    long *bigBoi = malloc(400000);
+    if (bigBoi == 0) {
+        printf("failed to malloc 400000\n");
+    }
+    else {
+        printf("nice job\n");
+    }
+
+    for (int i = 0; i < big / 2; i++) {
+        free(arr[i]);
+    }
+
+    long *smallBoi = malloc(150000);
+    if (smallBoi == 0) {
+        printf("failed to malloc 150000\n");
+    }
+    else {
+        printf("good stuff\n");
+    }
+
+    return 0;
+}

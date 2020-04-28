@@ -1,0 +1,11 @@
+- explain how you initialize the heap before the first malloc is called
+
+The heap is simply an array that we created. We did this by using variable length arrays. This memory is stored on the stack, whereas arrays that are malloced are always stored in the heap. 
+
+- malloc and free are an integral part of C. Explain how we're able to
+  replace them with our own implementation.
+
+  We replaced them by using our own "heap" to malloc from. This heap is in the form of an array, and is actually stored on the stack. The library free and malloc would manipulate memory from the heap, but our implementation would simply allocate and deallocate certain regions from our "the_heap" array within our stack. 
+
+
+
