@@ -172,6 +172,173 @@ node *add(node *root, size_t size, int is_black) {
 		return root;
 }
 
+///////Delete is below
+//////
+node *sibling(node *k){
+    if(k->parent == 0)
+        return 0;
+    if(k == k->parent->left)
+        return k->parent->right;
+    else
+        return k->parent->left;
+    
+}
+
+node *replace(node *k){
+    //node has two children
+    if(k->left != 0 && k->right != 0){
+        node *temp = k->right;
+        while(temp->left != 0){
+            temp = temp->left;
+        }
+        return temp;
+    }
+
+    //node is leef
+    if(k->left == 0 && k->right == 0){
+        return 0;
+    }
+
+    //node has exactly one child
+    if(k->left != 0) return k->left;
+    else return k->right;
+}
+
+void fixBothBlack(node** root, node* k){
+    if(k == *root){
+        return;
+    }
+    node *kPar = k->parent;
+    node *kSib = sibling(k);
+
+    if(kSib == 0){
+        fixBothBlack(root, kPar);
+    }
+    else{
+        if(kSib->is_black == 0){//red sib
+            kPar->is_black = 0;
+            kSib->is_black = 1;
+            if(kSib == kSib->parent->left){
+                right_rotate(root, kPar);
+            }
+            else
+            {
+                left_rotate(root, kPar);
+            }
+            fixBothBlack(root, k);
+        }
+        else{//black sib
+            if((kSib->left != 0 && kSib->left->is_black == 0) || 
+            (kSib->right != 0 && kSib->right->is_black == 0)){
+                //sib has at least one red child
+                if(kSib->left != 0 && kSib->left->is_black == 0){
+                    if(kSib == kSib->parent->left){//LL
+                        kSib->left->is_black = kSib->is_black;
+                        kSib->is_black = kPar->is_black;
+                        right_rotate(kPar);
+                    }
+                    else{//RL
+                        kSib->left->is_black = kPar->is_black;
+                        right_rotate(kSib);
+                        left_rotate(kPar);
+                    }
+                }
+                else{
+                    if(kSib == kSib->parent->right){//RR
+                        kSib->right->is_black = kSib->is_black;
+                        kSib->is_black = kPar->is_black;
+                        left_rotate(kPar);
+                    }
+                    else{//LR
+                        kSib->right->is_black = kPar->is_black;
+                        left_rotate(kSib);
+                        right_rotate(kPar);
+                    }
+                }
+                kPar->is_black = 1;
+            }
+            else{//both children black
+                kSib->is_black = 0;
+                if(kPar->is_black == 1){
+                    fixBothBlack(root, kPar)
+                }
+                else{
+                    kPar->is_black = 1;
+                }
+            }
+        }
+    }
+}
+
+void delete(node **root, size_t size){
+    node *runner = *root;
+    while (runner != 0 && runner->size != size) {
+		runner = runner->size < size ? runner->right : runner->left;
+	}
+
+    node *repl = replace(runner);
+    bool bothBlack = (runner->is_black) && (repl == 0 || repl->is_black);
+    //runner is leaf (no children)
+    if(repl == 0){
+        if(runner == *root){
+            root = 0;
+        }
+        else {
+            if(bothBlack){
+                fixBothBlack(root, runner);
+            }
+            else if(sibling(runner) != 0){
+                sibling(runner)->isBlack = 0;
+            }
+            if(runner == runner->parent->left){
+                runner->parent->left = 0;
+            }
+            else{
+                runner->parent->right = 0;
+            }
+        }        
+        return;
+    }
+    //runner has one child
+    if(runner->left == 0 || runner->right == 0){
+        if(runner == *root){
+            runner->size = repl->size;
+            runner->left = 0;
+            runner->right = 0;
+            //remove repl from tree
+            if(repl == repl->parent->left){
+                repl->parent->left = 0;
+            }
+            else{
+                repl->parent->right = 0;
+            }
+        }
+        else{
+            if(runner == runner->parent->left){
+                runner->parent->left = repl;
+            }
+            else{
+                runner->parent->right = repl;
+            }
+            repl->parent = runner->parent;
+
+            if(bothBlack){
+                fixBothBlack(root, repl);
+            }
+            else{
+                repl->is_black = 1;
+            }
+        }
+        return;
+    }
+    //runner has 2 children
+    int ct = repl->size;
+    repl->size = runner->size;
+    runner->size = ct;
+    delete(repl);
+
+}
+
 void display_driver(node *root, int level) {
    		if (root == 0) return;
     	char *out = root->is_black ? "black" : "red";
