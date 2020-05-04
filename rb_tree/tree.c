@@ -10,13 +10,13 @@ typedef struct rb_node {
 
 // node contructor
 node *make_node(node *left, node *right, node *parent, size_t size, int is_black) {
-	node *temp_node = (node*) malloc(sizeof(node));
-	temp_node->left = left;
-	temp_node->right = right;
-	temp_node->parent = 0;
-	temp_node->size = size;
-	temp_node->is_black = is_black ? 1 : 0;
-	return temp_node;
+		node *temp_node = (node*) malloc(sizeof(node));
+		temp_node->left = left;
+		temp_node->right = right;
+		temp_node->parent = 0;
+		temp_node->size = size;
+		temp_node->is_black = is_black ? 1 : 0;
+		return temp_node;
 }
 
 void left_rotate(node **root, node *ptr) {
@@ -92,10 +92,8 @@ void fix(node **root, node *cur_node) {
 						// left-left case
 						if (grandparent->left == parent && parent->left == cur_node) {
 								int parent_is_black = parent->is_black;
-//								parent->is_black = grandparent->is_black;
-//								grandparent->is_black = parent_is_black;
-								parent->is_black = 1;
-								grandparent->is_black = 0;
+								parent->is_black = grandparent->is_black;
+								grandparent->is_black = parent_is_black;
 								right_rotate(root, grandparent);
 						}
 						// left-right case
@@ -158,37 +156,37 @@ void insert(node **root, size_t size) {
 }
 
 node *add(node *root, size_t size, int is_black) {
-	if (root == 0) return make_node(0, 0, 0, size, is_black);
-
-	if (root->size < size) {
-		root->right = add(root->right, size, is_black);
-		root->right->parent = root;
-	}
-	else {
-		root->left = add(root->left, size, is_black);
-		root->left->parent = root;
-	}
+		if (root == 0) return make_node(0, 0, 0, size, is_black);
 	
-	// add rotation shit here 
+		if (root->size < size) {
+			root->right = add(root->right, size, is_black);
+			root->right->parent = root;
+		}
+		else {
+			root->left = add(root->left, size, is_black);
+			root->left->parent = root;
+		}
+	
+		// add rotation shit here 
 
-	return root;
+		return root;
 }
 
 void display_driver(node *root, int level) {
-    if (root == 0) return;
-    char *out = root->is_black ? "black" : "red";
-    for (int i = 0; i < level; i++) {
-        printf("\t");
-    }
-	size_t cur_size = root->size;
-	size_t parent_size = root->parent == 0 ? 0 : root->parent->size;
-    printf("[%lu] %lu:  %s\n", parent_size, cur_size, out);
-    display_driver(root->left, level + 1);
-    display_driver(root->right, level + 1);
+   		if (root == 0) return;
+    	char *out = root->is_black ? "black" : "red";
+    	for (int i = 0; i < level; i++) {
+    	    printf("\t");
+    	}
+		size_t cur_size = root->size;
+		size_t parent_size = root->parent == 0 ? 0 : root->parent->size;
+    	printf("[%lu] %lu:  %s\n", parent_size, cur_size, out);
+    	display_driver(root->left, level + 1);
+    	display_driver(root->right, level + 1);
 }
 
 void display(node *root) {
-    display_driver(root, 0);
+    	display_driver(root, 0);
 }
 
 void print_tree(node *root) {
@@ -200,27 +198,14 @@ void print_tree(node *root) {
 }
 
 int main() {
-	/*
-	node *root = make_node(0, 0, 0, 500, 0);
-	add(root, 150, 1);
-	add(root, 750, 0);
+		node *root = 0;
+		insert(&root, 5);
+		insert(&root, 3);
+		insert(&root, 1);
+		insert(&root, 15);
+		insert(&root, 0);
+		insert(&root, 10);
 
-    display(root);
-	*/
-
-	node *root = 0;
-	insert(&root, 5);
-	insert(&root, 3);
-	insert(&root, 1);
-	insert(&root, 15);
-	insert(&root, 0);
-	insert(&root, 10);
-
-	display(root);
-//	print_tree(root);
-
-//	node *cur = make_node(0, 0, 0, 500, 1);
-
-    
-    return 0;
+		display(root);
+    	return 0;
 }
