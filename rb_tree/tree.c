@@ -235,24 +235,24 @@ void fixBothBlack(node** root, node* k){
                     if(kSib == kSib->parent->left){//LL
                         kSib->left->is_black = kSib->is_black;
                         kSib->is_black = kPar->is_black;
-                        right_rotate(kPar);
+                        right_rotate(root, kPar);
                     }
                     else{//RL
                         kSib->left->is_black = kPar->is_black;
-                        right_rotate(kSib);
-                        left_rotate(kPar);
+                        right_rotate(root, kSib);
+                        left_rotate(root, kPar);
                     }
                 }
                 else{
                     if(kSib == kSib->parent->right){//RR
                         kSib->right->is_black = kSib->is_black;
                         kSib->is_black = kPar->is_black;
-                        left_rotate(kPar);
+                        left_rotate(root, kPar);
                     }
                     else{//LR
                         kSib->right->is_black = kPar->is_black;
-                        left_rotate(kSib);
-                        right_rotate(kPar);
+                        left_rotate(root, kSib);
+                        right_rotate(root, kPar);
                     }
                 }
                 kPar->is_black = 1;
@@ -260,7 +260,7 @@ void fixBothBlack(node** root, node* k){
             else{//both children black
                 kSib->is_black = 0;
                 if(kPar->is_black == 1){
-                    fixBothBlack(root, kPar)
+                    fixBothBlack(root, kPar);
                 }
                 else{
                     kPar->is_black = 1;
@@ -277,7 +277,7 @@ void delete(node **root, size_t size){
 	}
 
     node *repl = replace(runner);
-    bool bothBlack = (runner->is_black) && (repl == 0 || repl->is_black);
+    int bothBlack = (runner->is_black) && (repl == 0 || repl->is_black);
     //runner is leaf (no children)
     if(repl == 0){
         if(runner == *root){
@@ -288,7 +288,7 @@ void delete(node **root, size_t size){
                 fixBothBlack(root, runner);
             }
             else if(sibling(runner) != 0){
-                sibling(runner)->isBlack = 0;
+                sibling(runner)->is_black = 0;
             }
             if(runner == runner->parent->left){
                 runner->parent->left = 0;
@@ -335,7 +335,7 @@ void delete(node **root, size_t size){
     int ct = repl->size;
     repl->size = runner->size;
     runner->size = ct;
-    delete(repl);
+    delete(root, repl->size);
 
 }
 
@@ -372,6 +372,7 @@ int main() {
 		insert(&root, 15);
 		insert(&root, 0);
 		insert(&root, 10);
+        delete(&root, 5);
 
 		display(root);
     	return 0;
