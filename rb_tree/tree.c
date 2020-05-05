@@ -108,7 +108,7 @@ void fix(node **root, node *cur_node) {
 						else if (grandparent->right == parent && parent->right == cur_node) {
 								int parent_is_black = parent->is_black;
 								parent->is_black = grandparent->is_black;
-								grandparent->is_black = parent->is_black;
+								grandparent->is_black = parent_is_black;
 								left_rotate(root, grandparent);
 						}
 						// right-left case
