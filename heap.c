@@ -37,6 +37,22 @@ size_t get_size(node *location) {
 		return cur_meta->size;
 }
 
+// returns a node of at least size_t size from list
+node *search(size_t size, node *list) {
+		if (list == 0) return 0;
+
+		node *temp_list = list;
+
+		while (temp_list != 0 && get_size(temp_list) != size) {
+				temp_list = get_size(temp_list) < size ? temp_list->right : temp_list->left;
+		}
+
+		if (temp_list == 0) return temp_list->parent;
+		else if (get_size(temp_list) == size) return temp_list;
+		else if (get_size(temp_list->parent) > size) return temp_list->parent;
+		else return 0; 
+}
+
 void make_node(void *location, node *left, node *right, node *parent) {
 		node *cur_loc = (node*) location;
 		node cur_node = {left, right, parent};
