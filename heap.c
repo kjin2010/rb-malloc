@@ -17,15 +17,33 @@ typedef struct {
 
 } meta;
 
-node *free_list;
+node *free_list = 0;
 
-node *make_node(void *location, node *left, node *right, node *parent) {
+// helper function that gets is_black
+int get_is_black(node *location) {
+		meta *cur_meta = (meta*) (((void*) location) - 8);
+		return cur_meta->is_black;
+}
+
+// helper function that gets is_used
+int get_is_used(node *location) {
+		meta *cur_meta = (meta*) (((void*) location) - 8);
+		return cur_meta->is_used;
+}
+
+// helper function that gets size
+size_t get_size(node *location) {
+		meta *cur_meta = (meta*) (((void*) location) - 8);
+		return cur_meta->size;
+}
+
+void make_node(void *location, node *left, node *right, node *parent) {
 		node *cur_loc = (node*) location;
 		node cur_node = {left, right, parent};
 		*cur_loc = cur_node;
 }
 
-header *make_meta(void *location, size_t size, int is_black, int is_used) { 
+void make_meta(void *location, size_t size, int is_black, int is_used) { 
 		meta *cur_loc = (meta*) location;
 		meta cur_meta = {size, is_black, is_used};
 		*cur_loc = cur_meta;
@@ -37,10 +55,11 @@ void init_free_list() {
 		make_meta(&the_heap[HEAP_SIZE / sizeof(long) - 1], HEAP_SIZE - 16, 1, 0);
 		// adding to red black tree
 		make_node(&the_heap[1], 0, 0, 0);
-		free_list = &the_heap;
+		// insert(&free_list, (node*) &the_heap[1]);
+		free_list = (void*) &the_heap[1];
 } 
 
-void *malloc() {
+void *malloc(size_t size) {
     return 0;
 }
 

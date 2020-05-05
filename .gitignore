@@ -1,9 +1,1 @@
-*.out
-*.d
-*.o
-*.diff
-*.raw
-*.result
-*.exec
-*copy
-
+notes.md
