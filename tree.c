@@ -38,21 +38,18 @@ void set_size(node *location, size_t size) {
 		cur_meta->size = size;
 }
 
-// returns a node of at least size_t size from list
-node *search(size_t size, node *list) {
-		if (list == 0) return 0;
-
-		node *temp_list = list;
-
-		while (temp_list != 0 && get_size(temp_list) != size) {
-				temp_list = get_size(temp_list) < size ? temp_list->right : temp_list->left;
-		}
-
-		if (temp_list == 0) return temp_list->parent;
-		else if (get_size(temp_list) == size) return temp_list;
-		else if (get_size(temp_list->parent) > size) return temp_list->parent;
-		else return 0;
+// helper function that compares two nodes 
+// returns 
+int compare(node *orig, node *new) {
+		size_t orig_size = get_size(orig);
+		size_t new_size = get_size(new);
+		if (orig_size == new_size) {
+				return new > orig;
+		}	
+		else return new_size > orig_size;
 }
+
+
 
 void left_rotate(node **root, node *ptr) {
 		// right child takes current node's place
@@ -175,11 +172,13 @@ void insert(node **root, node *new_node) {
 
 				while (runner != 0) {
 						prev_node = runner;
-						runner = get_size(runner) < size ? runner->right : runner->left;
+						// runner = get_size(runner) < size ? runner->right : runner->left;
+						runner = compare(runner, new_node) ? runner->right : runner->left;
 				}
 
 				new_node->parent = prev_node;
-				if (get_size(prev_node) < size) {
+				// if (get_size(prev_node) < size) {
+				if (compare(prev_node, new_node)) {
 						prev_node->right = new_node;
 				}
 				else {
