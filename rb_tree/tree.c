@@ -173,20 +173,20 @@ node *add(node *root, size_t size, int is_black) {
 }
 
 void display_driver(node *root, int level) {
-   		if (root == 0) return;
-    	char *out = root->is_black ? "black" : "red";
-    	for (int i = 0; i < level; i++) {
-    	    printf("\t");
-    	}
+		if (root == 0) return;
+		char *out = root->is_black ? "black" : "red";
+		for (int i = 0; i < level; i++) {
+				printf("\t");
+		}
 		size_t cur_size = root->size;
 		size_t parent_size = root->parent == 0 ? 0 : root->parent->size;
-    	printf("[%lu] %lu:  %s\n", parent_size, cur_size, out);
-    	display_driver(root->left, level + 1);
-    	display_driver(root->right, level + 1);
+		printf("[%lu] %lu:  %s\n", parent_size, cur_size, out);
+		display_driver(root->left, level + 1);
+		display_driver(root->right, level + 1);
 }
 
 void display(node *root) {
-    	display_driver(root, 0);
+		display_driver(root, 0);
 }
 
 void print_tree(node *root) {
@@ -207,5 +207,5 @@ int main() {
 		insert(&root, 10);
 
 		display(root);
-    	return 0;
+		return 0;
 }
