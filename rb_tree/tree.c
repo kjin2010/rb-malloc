@@ -332,10 +332,12 @@ void delete(node **root, size_t size){
         return;
     }
     //runner has 2 children
+    //int left = repl->size <= runner->size;
     int ct = repl->size;
     repl->size = runner->size;
     runner->size = ct;
-    delete(root, repl->size);
+    //replsize=3 runnersize=5
+    delete(&((*root)->right), size);
 
 }
 
@@ -372,7 +374,8 @@ int main() {
 		insert(&root, 15);
 		insert(&root, 0);
 		insert(&root, 10);
-        delete(&root, 5);
+        insert(&root, 3);
+        delete(&root, 3);
 
 		display(root);
     	return 0;
