@@ -3,8 +3,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define LENGTH (HEAP_SIZE / sizeof(long))
+
 volatile long mCount;
 volatile long fCount;
+
 
 typedef struct rb_node {
 		struct rb_node *parent, *left, *right;
@@ -394,7 +397,7 @@ void delete (node **root, node *new_node)
     {
         if (runner == *root)
         {
-            root = 0;
+            *root = 0;
         }
         else
         {
@@ -521,7 +524,7 @@ node *search(size_t size, node *list) {
 void init_free_list() {
 		// making headers
 		make_meta(&the_heap, HEAP_SIZE - 16, 1, 0);
-		make_meta(&the_heap[HEAP_SIZE / sizeof(long) - 1], HEAP_SIZE - 16, 1, 0);
+		make_meta(&the_heap[LENGTH - 1], HEAP_SIZE - 16, 1, 0);
 		// adding to red black tree
 		make_node(&the_heap[1], 0, 0, 0);
 		// insert(&free_list, (node*) &the_heap[1]);
@@ -558,6 +561,9 @@ void *malloc(size_t size) {
 						// reinsert if splitted
 						insert(free_list, ((node*) split_block));
 				}
+				else {
+						set_is_used(valid_node, 1);
+				}
 				// return valid_node
 				return valid_node;
 		}
@@ -566,6 +572,55 @@ void *malloc(size_t size) {
 		}
 }
 
-void free(void *ptr) {
+int check_post_empty(node *cur_node) {
+		size_t size = get_size(cur_node);
+		meta *cur_footer = (meta*) (((void*) cur_node) +size);
+		if (((void*) cur_footer) == ((void*) the_heap[LENGTH - 1])) {
+				return 0;
+		}
+		else {
+				meta *next_footer = (meta*) (cur_footer + 1);
+				return next_footer->is_used;
+		}
+}
 
+int check_prev_empty(node *cur_node) {
+		if (((void*) cur_node) == ((void*) &the_heap[1])) {
+				return 0;
+		}
+		else {
+				meta *prev_footer = (meta*) (((void*) cur_node) - 16);
+				return prev_footer->is_used;	
+		}
+}
+
+void merge(node *first_node, node *second_node) {
+		delete(free_list, first_node);
+		delete(free_list, second_node);
+
+		size_t total_size = get_size(first_node) + get_size(second_node);
+		set_headers(first_node, total_size + 16, 0);
+		
+		insert(free_list, first_node);
+}
+
+void free(void *ptr) {		
+		node *cur_node = (node*) ptr;
+		int is_insert = 0;
+		if (check_post_empty(cur_node)) {
+				node *next_node = (node*) (ptr + get_size(cur_node) + 16);
+				merge(cur_node, next_node);
+				is_insert = 1;
+		}
+
+		if (check_prev_empty(cur_node)) {
+				meta *prev_footer = (meta*) (ptr - 16);
+				node *prev_node = (node*) (ptr - 16 - prev_footer->size);
+				merge(prev_node, cur_node);
+				is_insert = 1;
+		}
+
+		if (!is_insert) {
+				insert(free_list, cur_node);
+		}
 }
