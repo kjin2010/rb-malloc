@@ -7,5 +7,6 @@ long the_heap[HEAP_SIZE / sizeof(long)];
 
 int main() {
 	printf("hello world\n");
+	int *hi = (int*) malloc(5);
 	return 0;
 }

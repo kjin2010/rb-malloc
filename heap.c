@@ -16,7 +16,8 @@ typedef struct {
 		int is_used : 3;
 } meta;
 
-node *free_list = 0;
+node *temp = (node*) the_heap;
+node **free_list = &temp; 
 int has_init = 0;
 
 size_t get_size(node *cur_node);
@@ -488,16 +489,33 @@ void make_meta(void *location, size_t size, int is_black, int is_used) {
 node *search(size_t size, node *list) {
 		if (list == 0) return 0;
 
-		node *temp_list = list;
+		node *runner = list;
+		node *prev_node = 0;
 
-		while (temp_list != 0 && get_size(temp_list) != size) {
-				temp_list = get_size(temp_list) < size ? temp_list->right : temp_list->left;
+		while (runner != 0 && get_size(runner) != size) {
+				prev_node = runner;
+				runner = get_size(runner) < size ? runner->right : runner->left;
 		}
 
-		if (temp_list == 0) return temp_list->parent;
-		else if (get_size(temp_list) == size) return temp_list;
-		else if (get_size(temp_list->parent) > size) return temp_list->parent;
+		if (runner == 0) {
+				while (prev_node != 0 && get_size(prev_node) < size) {
+						prev_node = prev_node->parent;
+				}						
+				return prev_node; 
+		}
+		else {
+				return runner;	
+		}
+
+		/*
+		if (runner == 0) {
+				if (get_size(prev_node) >= size) return prev_node;
+				else return 0;
+		}
+		else if (get_size(runner) == size) return runner;
+		else if (get_size(runner) > size) return runner->parent;
 		else return 0;
+		*/
 }
 
 void init_free_list() {
@@ -507,7 +525,7 @@ void init_free_list() {
 		// adding to red black tree
 		make_node(&the_heap[1], 0, 0, 0);
 		// insert(&free_list, (node*) &the_heap[1]);
-		free_list = (void*) &the_heap[1];
+		*free_list = (node*) &the_heap[1];
 } 
 
 void set_headers(node *cur_node, size_t size, int is_used) {
@@ -523,12 +541,12 @@ void *malloc(size_t size) {
 		}
 
 		if (size - 16 > HEAP_SIZE || size == 0) return 0;
-		size = size + (8 - (size % 8));
+		size = size + (8 - size % 8) % 8;
 		size = size <= 24 ? 24 : size;
 
-		node *valid_node = search(size, free_list);
+		node *valid_node = search(size, *free_list);
 		if (valid_node) {
-				delete(&free_list, valid_node);
+				delete(free_list, valid_node);
 				size_t cur_size = get_size(valid_node);
 				// split if splittable
 				if (cur_size - size >= 40) {
@@ -536,9 +554,9 @@ void *malloc(size_t size) {
 						set_headers(valid_node, size, 1);
 						void *split_block = ((void*) valid_node) + size + 16;
 						make_node(split_block, 0, 0, 0);
-						set_headers((node*) split_block, cur_size - 16, 0);
+						set_headers((node*) split_block, cur_size - size - 16, 0);
 						// reinsert if splitted
-						insert(&free_list, ((node*) split_block));
+						insert(free_list, ((node*) split_block));
 				}
 				// return valid_node
 				return valid_node;

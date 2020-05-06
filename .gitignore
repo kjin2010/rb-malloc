@@ -1,1 +1,8 @@
 notes.md
+*.raw
+*.result
+*.o
+*.out
+*.d
+*.diff
+*.exec
