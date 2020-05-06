@@ -11,7 +11,9 @@ int get_is_black(node *location) {
 // helper function that sets is_black
 void set_is_black(node *location, int is_black) {
 		meta *cur_meta = (meta*) (((void*) location) - 8);
+		meta *next_meta = (meta*) (((void*) location) + get_size((node*) location));
 		cur_meta->is_black = is_black;
+		next_meta->is_black = is_black;
 }
 
 // helper function that gets is_used
@@ -23,7 +25,9 @@ int get_is_used(node *location) {
 // helper function that sets is_used
 void set_is_used(node *location, int is_used) {
 		meta *cur_meta = (meta*) (((void*) location) - 8);
+		meta *next_meta = (meta*) (((void*) location) + get_size((node*) location));
 		cur_meta->is_used = is_used;
+		next_meta->is_used = is_used;
 }
 
 // helper function that gets size
@@ -35,7 +39,9 @@ size_t get_size(node *location) {
 // helper function that sets size
 void set_size(node *location, size_t size) {
 		meta *cur_meta = (meta*) (((void*) location) - 8);
+		meta *next_meta = (meta*) (((void*) location) + size);
 		cur_meta->size = size;
+		next_meta->size = size;
 }
 
 // helper function that compares two nodes 
@@ -48,8 +54,6 @@ int compare(node *orig, node *new) {
 		}	
 		else return new_size > orig_size;
 }
-
-
 
 void left_rotate(node **root, node *ptr) {
 		// right child takes current node's place
@@ -161,6 +165,7 @@ void fix(node **root, node *cur_node) {
 // inserts new_node into *root using bst property
 void insert(node **root, node *new_node) {
 		size_t size = get_size(new_node);
+		set_is_used(new_node, 0);
 
 		if (*root == 0) {
 				*root = new_node;

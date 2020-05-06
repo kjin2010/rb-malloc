@@ -8,6 +8,7 @@ volatile long mCount;
 volatile long fCount;
 
 node *free_list = 0;
+int has_init = 0;
 
 void make_node(void *location, node *left, node *right, node *parent) {
 		node *cur_loc = (node*) location;
@@ -47,7 +48,18 @@ void init_free_list() {
 		free_list = (void*) &the_heap[1];
 } 
 
+void set_headers(node *cur_node, size_t size, int is_used) {
+		void *start = (void*) cur_node;
+		make_meta(start - 8, size, 0, is_used);
+		make_meta(start + size, size, 0, is_used);	
+}
+
 void *malloc(size_t size) {
+		if (!has_init) {
+				init_free_list();
+				has_init = !has_init;
+		}
+
 		if (size - 16 > HEAP_SIZE || size == 0) return 0;
 		size = size + (8 - (size % 8));
 		size = size <= 24 ? 24 : size;
@@ -57,14 +69,20 @@ void *malloc(size_t size) {
 				size_t cur_size = get_size(valid_node);
 				// split if splittable
 				if (cur_size - size >= 40) {
-
-					// reinsert if splitted
-					
+						// resets header size
+						set_headers(valid_node, size, 1);
+						void *split_block = ((void*) valid_node) + size + 16;
+						make_node(split_block, 0, 0, 0);
+						set_headers((node*) split_block, cur_size - 16, 0);
+						// reinsert if splitted
+						insert(&free_list, (node*) split_block);
 				}
 				// return valid_node
+				return valid_node;
 		}
-		
-		return 0;
+		else {
+				return 0;
+		}
 }
 
 void free(void *ptr) {
