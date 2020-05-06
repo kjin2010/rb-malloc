@@ -546,12 +546,13 @@ void set_headers(node *cur_node, size_t size, int is_used) {
 }
 
 void *malloc(size_t size) {
+		mCount++;
 		if (!has_init) {
 				init_free_list();
 				has_init = !has_init;
 		}
 
-		if (size - 16 > HEAP_SIZE || size == 0) return 0;
+		if (size == 0) return 0;
 		size = size + (8 - size % 8) % 8;
 		size = size <= 24 ? 24 : size;
 
@@ -613,15 +614,16 @@ void merge(node *first_node, node *second_node) {
 }
 
 void free(void *ptr) {		
+		fCount++;
 		node *cur_node = (node*) ptr;
 		int is_insert = 0;
-		if (check_post_empty(cur_node)) {
+		if (!check_post_empty(cur_node)) {
 				node *next_node = (node*) (ptr + get_size(cur_node) + 16);
 				merge(cur_node, next_node);
 				is_insert = 1;
 		}
 
-		if (check_prev_empty(cur_node)) {
+		if (!check_prev_empty(cur_node)) {
 				meta *prev_footer = (meta*) (ptr - 16);
 				node *prev_node = (node*) (ptr - 16 - prev_footer->size);
 				merge(prev_node, cur_node);

@@ -6,7 +6,17 @@
 long the_heap[HEAP_SIZE / sizeof(long)];
 
 int main() {
-	printf("hello world\n");
-	int *hi = (int*) malloc(5);
+/*
+	void *arr[10];
+	for (int i = 0; i < 10; i++) {
+		arr[i] = malloc(i); 
+	}	 
+*/
+
+	void *hi = malloc(HEAP_SIZE / 2);
+	void *bye = malloc(HEAP_SIZE / 2);
+
+	free(hi);
+
 	return 0;
 }
