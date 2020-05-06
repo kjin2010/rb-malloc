@@ -1,6 +1,6 @@
 #include "heap.h"
 #include "debug.h"
-#include "nodes.h"
+#include "tree.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -66,6 +66,7 @@ void *malloc(size_t size) {
 
 		node *valid_node = search(size, free_list);
 		if (valid_node) {
+				delete(&free_list, valid_node);
 				size_t cur_size = get_size(valid_node);
 				// split if splittable
 				if (cur_size - size >= 40) {
@@ -75,7 +76,7 @@ void *malloc(size_t size) {
 						make_node(split_block, 0, 0, 0);
 						set_headers((node*) split_block, cur_size - 16, 0);
 						// reinsert if splitted
-						insert(&free_list, (node*) split_block);
+						insert(&free_list, ((node*) split_block));
 				}
 				// return valid_node
 				return valid_node;

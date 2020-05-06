@@ -1,0 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "heap.h"
+#include "debug.h"
+
+long the_heap[HEAP_SIZE / sizeof(long)];
+
+int main() {
+	printf("hello world\n");
+	return 0;
+}

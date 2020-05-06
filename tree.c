@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "nodes.h"
+#include "tree.h"
 
 // helper function that gets is_black
 int get_is_black(node *location)
