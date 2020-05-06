@@ -382,7 +382,15 @@ void fixBothBlack(node **root, node *k)
 }
 
 void delete (node **root, node *new_node)
-{
+{   
+    //first verify new_node is indeed in the tree
+    node *temp = *root;
+    while(temp != 0 && temp != new_node){
+        temp = compare(temp, new_node) ? temp->right : temp->left;
+    }
+    if(temp == 0) return;
+
+    
     node *runner = new_node; //idk why i did this line but whatev
     /*
     while (runner != 0 && runner != new_node) {
