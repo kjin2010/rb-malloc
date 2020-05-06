@@ -12,7 +12,7 @@ int has_init = 0;
 
 void make_node(void *location, node *left, node *right, node *parent) {
 		node *cur_loc = (node*) location;
-		node cur_node = {left, right, parent};
+		node cur_node = {parent, left, right};
 		*cur_loc = cur_node;
 }
 

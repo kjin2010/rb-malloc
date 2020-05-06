@@ -2,6 +2,16 @@
 #include <stdlib.h>
 #include "tree.h"
 
+struct rb_node {
+		struct rb_node *parent, *left, *right;
+};
+
+struct Meta {
+		size_t size : 58;
+		int is_black : 3;
+		int is_used : 3;
+};
+
 // helper function that gets is_black
 int get_is_black(node *location)
 {
@@ -220,6 +230,7 @@ void insert(node **root, node *new_node)
         fix(root, new_node);
     }
 }
+
 /////DELETE is below
 ////
 node *sibling(node *k)
