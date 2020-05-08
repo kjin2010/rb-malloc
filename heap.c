@@ -561,7 +561,7 @@ void *malloc(size_t size) {
 				has_init = !has_init;
 		}
 
-		if (size == 0) return 0;
+		if (size == 0) return the_heap;
 
 		// make size multiple of 8 to make byte addressable 
 		size = size + (8 - size % 8) % 8;
@@ -649,6 +649,7 @@ void merge(node *first_node, node *second_node) {
 // merges current block with prior and following block if neccessary
 void free(void *ptr) {		
 		fCount++;
+		if (ptr == (void*) the_heap) return;
 		
 		node *cur_node = (node*) ptr;
 		int is_insert = 0;
