@@ -666,14 +666,14 @@ void *malloc(size_t size) {
 
 				// split if splittable
 				if (cur_size - size >= 40) {
-						// resets header size
-						set_headers(valid_node, size, 1);
 						void *split_block = ((void*) valid_node) + size + 16;
 						// splits block by making new node
 						make_node(split_block, 0, 0, 0);
 						// sets size of headers of new node 
 						set_headers((node*) split_block, cur_size - size - 16, 0);
-
+						// resets header size
+						set_headers(valid_node, size, 1);
+		
 						// reinsert splitted node 
 						insert(free_list, ((node*) split_block));
 				}
@@ -738,7 +738,7 @@ void merge(node *first_node, node *second_node) {
 // merges current block with prior and following block if neccessary
 void free(void *ptr) {		
 		fCount++;
-		if (ptr == (void*) the_heap) return;
+		if (ptr == ((void*) the_heap)) return;
 		
 		node *cur_node = (node*) ptr;
 		set_is_used(cur_node, 0);

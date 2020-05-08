@@ -26,9 +26,6 @@ int main() {
 
     // now you should have enough space for this since you should have merged
     void* p = malloc(3 * HEAP_SIZE / 8);
-	if (p != 0) {
-		printf("success");
-	}
 
     printf("MAWooooOOOOOOOOOOOOooooooo\n");
 
