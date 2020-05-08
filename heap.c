@@ -401,14 +401,16 @@ void fixBothBlack(node **root, node *k)
     }
 }
 
-void delete (node **root, node *new_node)
+void delete (node **root, node *new_node, int flag)
 {   
     //first verify new_node is indeed in the tree
     node *temp = *root;
-    while(temp != 0 && temp != new_node){
-        temp = compare(temp, new_node) ? temp->right : temp->left;
+    if(!flag){
+        while(temp != 0 && temp != new_node){
+            temp = compare(temp, new_node) ? temp->right : temp->left;
+        }
+        if(temp == 0) return;
     }
-    if(temp == 0) return;
 
     
     node *runner = new_node; //idk why i did this line but whatev
@@ -453,12 +455,7 @@ void delete (node **root, node *new_node)
     if (runner->left == 0 || runner->right == 0)
     {
         if (runner == *root)
-        {
-            //runner->size = repl->size;
-            set_size(runner, get_size(repl));
-            runner->left = 0;
-            runner->right = 0;
-            //remove repl from tree
+        {            
             if (repl == repl->parent->left)
             {
                 repl->parent->left = 0;
@@ -467,6 +464,21 @@ void delete (node **root, node *new_node)
             {
                 repl->parent->right = 0;
             }
+            repl->parent = runner->parent;
+            repl->left = runner->left;
+            repl->right = runner->right;
+            //runner->left->parent = repl;
+            //runner->right->parent = repl;
+
+            set_is_black(repl, get_is_black(runner));
+
+            *root = repl;
+
+            runner->right = 0;
+            runner->left = 0;
+            //runner->size = repl->size;
+            //remove repl from tree
+            
         }
         else
         {
@@ -479,6 +491,19 @@ void delete (node **root, node *new_node)
                 runner->parent->right = repl;
             }
             repl->parent = runner->parent;
+
+            repl->left = runner->left;
+            repl->right = runner->right;
+            //runner->left->parent = repl;
+            //runner->right->parent = repl;
+
+            set_is_black(repl, get_is_black(runner));
+
+            runner->parent = 0;
+            runner->left = 0;
+            runner->right = 0;
+
+            
 
             if (bothBlack)
             {
@@ -497,11 +522,75 @@ void delete (node **root, node *new_node)
     //int ct = repl->size;
     //repl->size = runner->size;
     //runner->size = ct;
-    int ct = get_size(repl);
-    set_size(repl, get_size(runner));
-    set_size(runner, ct);
+    
+    //int ct = get_size(repl);
+    //set_size(repl, get_size(runner));
+    //set_size(runner, ct);
+    node *replParent = repl->parent;
+    int replColor = get_is_black(repl);
+    node *replLeft = repl->left;
+    node *replRight = repl->right;
 
-    delete (root, repl);
+    if(runner == *root){
+        
+        repl->parent = 0;
+
+        repl->left = runner->left;
+        repl->right = runner->right;
+        runner->left->parent = repl;
+        runner->right->parent = repl;
+
+        set_is_black(repl, get_is_black(runner));
+
+        *root = repl;
+
+        runner->parent = replParent;
+        if(replParent->left == repl){
+            replParent->left = runner;
+        }
+        else{
+            replParent->right = runner;
+        }
+        if(replRight != 0){
+            replRight->parent = runner;
+        }
+        if(replLeft != 0){
+            replLeft->parent = runner;
+        }
+        runner->right = replRight;
+        runner->left = replLeft;
+        set_is_black(runner, replColor);
+    }
+    else{
+        repl->parent = 0;
+
+        repl->left = runner->left;
+        repl->right = runner->right;
+        runner->left->parent = repl;
+        runner->right->parent = repl;
+
+        set_is_black(repl, get_is_black(runner));
+
+        //*root = repl;
+
+        runner->parent = replParent;
+        if(replParent->left == repl){
+            replParent->left = runner;
+        }
+        else{
+            replParent->right = runner;
+        }
+        if(replRight != 0){
+            replRight->parent = runner;
+        }
+        if(replLeft != 0){
+            replLeft->parent = runner;
+        }
+        runner->right = replRight;
+        runner->left = replLeft;
+        set_is_black(runner, replColor);
+    }
+    delete (root, runner, 1);
 }
 
 // returns a node of at least size_t size from list
@@ -572,7 +661,7 @@ void *malloc(size_t size) {
 
 		// if exists node that fits size
 		if (valid_node) {
-				delete(free_list, valid_node);
+				delete(free_list, valid_node, 0);
 				size_t cur_size = get_size(valid_node);
 
 				// split if splittable
@@ -633,8 +722,8 @@ int check_prev_empty(node *cur_node) {
 // merges first_node and second_node
 // assumed that first_node comes before second_node
 void merge(node *first_node, node *second_node) {
-		delete(free_list, first_node);
-		delete(free_list, second_node);
+		delete(free_list, first_node, 0);
+		delete(free_list, second_node, 0);
 
 		// calculates size of resulting merged block
 		size_t total_size = get_size(first_node) + get_size(second_node);
