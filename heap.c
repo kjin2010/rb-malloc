@@ -610,7 +610,7 @@ int check_post_empty(node *cur_node) {
 		
 		// if current block is at end of the_heap, no following block, so return 0
 		if (((void*) cur_footer) == ((void*) the_heap[LENGTH - 1])) {
-				return 0;
+				return 1;
 		}
 		else {
 				// return if next block is used
@@ -622,7 +622,7 @@ int check_post_empty(node *cur_node) {
 // same as check_post_empty
 int check_prev_empty(node *cur_node) {
 		if (((void*) cur_node) == ((void*) &the_heap[1])) {
-				return 0;
+				return 1;
 		}
 		else {
 				meta *prev_footer = (meta*) (((void*) cur_node) - 16);
