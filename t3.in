@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include "heap.h"
+#include "debug.h"
+
+long the_heap[HEAP_SIZE/sizeof(long)];
+
+struct Dog {
+    char* name;
+    int age;
+};
+
+int main() {
+    void* pointers[6];
+
+    for (int i = 0; i < 6; i++) {
+        pointers[i] = malloc(HEAP_SIZE / 8);
+    }
+
+    for (int i = 0; i < 6; i += 2) {
+        free(pointers[i]);
+    }
+
+    free(pointers[1]);
+
+    // now you should have enough space for this since you should have merged
+    void* p = malloc(3 * HEAP_SIZE / 8);
+
+    printf("MAWooooOOOOOOOOOOOOooooooo\n");
+
+    // free everything that's still malloced
+    free(pointers[3]);
+    free(pointers[5]);
+    
+    struct Dog *woof;
+    for (int i = 0; i < 8; i++) {
+        struct Dog *woof1 = malloc(sizeof(struct Dog));
+        struct Dog *woof2 = malloc(sizeof(struct Dog));
+        free(woof1);
+        woof = woof2;
+    }
+
+    woof->name = "Maw";
+    printf("%s\n", ((struct Dog*) woof)->name);
+    return 0;
+}
