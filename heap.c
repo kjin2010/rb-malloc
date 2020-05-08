@@ -743,7 +743,9 @@ void free(void *ptr) {
 		if (ptr == (void*) the_heap) return;
 		
 		node *cur_node = (node*) ptr;
-		set_is_used(cur_node, 0);
+		make_node(ptr, 0, 0, 0);
+        
+        set_is_used(cur_node, 0);
 		int is_insert = 0;
 		
 		// if following block is free
