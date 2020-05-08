@@ -740,7 +740,7 @@ void merge(node *first_node, node *second_node) {
 // merges current block with prior and following block if neccessary
 void free(void *ptr) {		
 		fCount++;
-		if (ptr == ((void*) the_heap)) return;
+		if (ptr == (void*) the_heap) return;
 		
 		node *cur_node = (node*) ptr;
 		set_is_used(cur_node, 0);
