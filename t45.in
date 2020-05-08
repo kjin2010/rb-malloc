@@ -1,0 +1,52 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+#include "heap.h"
+#include "debug.h"
+
+#define BLOCK_SIZE ((HEAP_SIZE - 16)/16 - 16)
+#define MAX_ITERS 200000
+
+long the_heap[HEAP_SIZE/sizeof(long)];
+
+int main(){
+	//Tests to make sure your blocks use a maximum of 16 bytes total for the header/footer
+	void *ptrs[15];
+	for(int i = 0; i<15; i++){
+		ptrs[i] = malloc(BLOCK_SIZE);
+		if(ptrs[i] == 0){
+			printf("This should not be printed!\n");
+		}
+		//Test that all parts of the allocated memory can be written to
+		int *intPtr = (int*)ptrs[i];
+		for(int j = 0; j<BLOCK_SIZE; j+=4){
+			*intPtr++ = 0x12345678;
+		}
+	}
+
+	//Tests to make sure you coalesce free blocks
+	for(int i = 0; i<15; i++){
+		free(ptrs[i]);
+	}
+
+	void *ptr = malloc(15*BLOCK_SIZE);
+	if(ptr == 0){
+		printf("This should not be printed!\n");
+	}
+	free(ptr);
+
+	//Tests to make sure your implementation runs fast (i.e. no linear scans through blocks)
+	for(int i = 0; i<MAX_ITERS; i++){
+		for(int i = 0; i<10; i++){
+			ptrs[i] = malloc(rand() % BLOCK_SIZE);
+		}
+		//So that the compiler doesn't optimize this away
+		if(rand() % BLOCK_SIZE >= 0){
+			for(int i = 0; i<10; i++){
+				free(ptrs[i]);
+			}
+		}
+	}
+	assert(mCount == fCount);
+	printf("Success!\n");
+}
