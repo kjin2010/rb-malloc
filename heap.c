@@ -456,7 +456,7 @@ void delete (node **root, node *new_node, int flag)
     {
         if (runner == *root)
         {            
-            if (repl == repl->parent->left)
+            /*if (repl == repl->parent->left)
             {
                 repl->parent->left = 0;
             }
@@ -464,9 +464,10 @@ void delete (node **root, node *new_node, int flag)
             {
                 repl->parent->right = 0;
             }
-            repl->parent = runner->parent;
-            repl->left = runner->left;
-            repl->right = runner->right;
+            */
+            repl->parent = 0;
+            repl->left = 0;
+            repl->right = 0;
             //runner->left->parent = repl;
             //runner->right->parent = repl;
 
@@ -476,6 +477,7 @@ void delete (node **root, node *new_node, int flag)
 
             runner->right = 0;
             runner->left = 0;
+            runner->parent = 0;
             //runner->size = repl->size;
             //remove repl from tree
             
@@ -492,12 +494,12 @@ void delete (node **root, node *new_node, int flag)
             }
             repl->parent = runner->parent;
 
-            repl->left = runner->left;
-            repl->right = runner->right;
+            //repl->left = runner->left;
+            //repl->right = runner->right;
             //runner->left->parent = repl;
             //runner->right->parent = repl;
 
-            set_is_black(repl, get_is_black(runner));
+            //set_is_black(repl, get_is_black(runner));
 
             runner->parent = 0;
             runner->left = 0;
@@ -562,8 +564,8 @@ void delete (node **root, node *new_node, int flag)
         set_is_black(runner, replColor);
     }
     else{
-        repl->parent = 0;
-
+        ///repl->parent = 0;
+        repl->parent = runner->parent;
         repl->left = runner->left;
         repl->right = runner->right;
         runner->left->parent = repl;
