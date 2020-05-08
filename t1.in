@@ -16,14 +16,16 @@ int main() {
 
     //Create a bunch of small blocks - should work with 16 byte overhead
     for(int i = 0; i < NUM; i++){
-        ptrs[i] = malloc(8);
+        ptrs[i] = malloc(34952);
     }
 
     for(int i = 0; i < 24; i++){
         free(ptrs[i]);
     }
     //Should have enough space for this now
-    char* z = malloc(544);
-    printf("Yay\n");
+    char* z = malloc(HEAP_SIZE * 2 / 3);
+	if (z != 0) {
+    	printf("Yay\n");
+	}
     return 0;
 }
