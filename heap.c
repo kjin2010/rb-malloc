@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define LENGTH (HEAP_SIZE / sizeof(long))
-
 volatile long mCount;
 volatile long fCount;
 
@@ -625,7 +623,7 @@ node *search(size_t size, node *list) {
 void init_free_list() {
         // making headers
         make_meta(&the_heap, HEAP_SIZE - 16, 1, 0);
-        make_meta(&the_heap[LENGTH - 1], HEAP_SIZE - 16, 1, 0);
+        make_meta(&the_heap[(1 << 17) - 1], HEAP_SIZE - 16, 1, 0);
 
         // adding to red black tree
         make_node(&the_heap[1], 0, 0, 0);
@@ -643,15 +641,13 @@ void set_headers(node *cur_node, size_t size, int is_used) {
 
 // returns pointer to block of at least size free space
 void *malloc(size_t size) {
-        mCount++;
-
         // initialize free list once 
         if (!has_init) {
                 init_free_list();
                 has_init = !has_init;
         }
 
-        if (size == 0) return the_heap;
+        if (size == 0) return 0;
 
         // make size multiple of 8 to make byte addressable 
         size = size + (8 - size % 8) % 8;
@@ -683,6 +679,7 @@ void *malloc(size_t size) {
                 }
 
                 // return valid_node
+                mCount++;
                 return valid_node;
         }
         // no node large enough for size
@@ -699,7 +696,7 @@ int check_post_empty(node *cur_node) {
         meta *cur_footer = (meta*) (((void*) cur_node) +size);
         
         // if current block is at end of the_heap, no following block, so return 0
-        if (((void*) cur_footer) == ((void*) the_heap[LENGTH - 1])) {
+        if (((node*) cur_footer) == ((node*) the_heap[(1 << 17) - 1])) {
                 return 1;
         }
         else {
@@ -711,7 +708,7 @@ int check_post_empty(node *cur_node) {
 
 // same as check_post_empty
 int check_prev_empty(node *cur_node) {
-        if (((void*) cur_node) == ((void*) &the_heap[1])) {
+        if (((node*) cur_node) == ((node*) &the_heap[1])) {
                 return 1;
         }
         else {
@@ -738,8 +735,8 @@ void merge(node *first_node, node *second_node) {
 // marks memory at ptr as free by inserting back into free list
 // merges current block with prior and following block if neccessary
 void free(void *ptr) {      
+        if (ptr == 0) return;
         fCount++;
-        if (ptr == (void*) the_heap) return;
         
         node *cur_node = (node*) ptr;
         make_node(ptr, 0, 0, 0);
