@@ -610,8 +610,10 @@ node *search(size_t size, node *list) {
                         prev_node = prev_node->parent;
                 }                       
                 if (prev_node->parent == 0) {
-                    
+                    if (get_size(prev_node) >= size) return prev_node;
+                    return 0;   
                 }
+                return prev_node;
         }
         // if runner is prefect node, return runner
         else {
